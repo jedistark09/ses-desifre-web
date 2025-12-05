@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#007AFF">
+    <title>Ses Deşifre Pro</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎙️</text></svg>">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #007AFF;
+            --primary-dark: #0056b3;
+            --bg: #f5f5f7;
+            --card-bg: #ffffff;
+            --text: #1d1d1f;
+            --text-secondary: #86868b;
+            --border: #d2d2d7;
+            --success: #34c759;
+            --error: #ff3b30;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            --radius: 16px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo {
+            font-size: 64px;
+            margin-bottom: 8px;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="password"],
+        input[type="file"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            background: var(--bg);
+        }
+
+        input[type="password"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: block;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 16px;
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            background: var(--bg);
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .file-input-display:hover {
+            border-color: var(--primary);
+            background: rgba(0, 122, 255, 0.05);
+        }
+
+        .file-input-display.has-file {
+            border-color: var(--success);
+            background: rgba(52, 199, 89, 0.05);
+        }
+
+        .file-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .file-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .file-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--success);
+            margin-top: 4px;
+            word-break: break-all;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-card {
+            display: none;
+        }
+
+        .result-card.visible {
+            display: block;
+        }
+
+        .result-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            line-height: 1.6;
+            resize: vertical;
+            background: var(--bg);
+        }
+
+        .result-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .copy-btn {
+            margin-top: 12px;
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .copy-btn:hover {
+            background: var(--border);
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-message {
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--error);
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .error-message.visible {
+            display: block;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 32px;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 480px) {
+            body {
+                padding: 16px 12px;
+            }
+
+            .card {
+                padding: 20px 16px;
+            }
+
+            .title {
+                font-size: 24px;
+            }
+        }
+
+        /* Safe area for notched phones */
+        @supports (padding: max(0px)) {
+            body {
+                padding-left: max(16px, env(safe-area-inset-left));
+                padding-right: max(16px, env(safe-area-inset-right));
+                padding-bottom: max(24px, env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">🎙️</div>
+            <h1 class="title">Ses Deşifre Pro</h1>
+            <p class="subtitle">Türkçe ses dosyalarını metne dönüştürün</p>
+        </header>
+
+        <div class="card">
+            <div class="input-group">
+                <label for="password">Erişim Şifresi</label>
+                <input type="password" id="password" placeholder="Şifrenizi girin" autocomplete="off">
+            </div>
+
+            <div class="input-group">
+                <label for="audioFile">Ses Dosyası</label>
+                <div class="file-input-wrapper">
+                    <div class="file-input-display" id="fileDisplay">
+                        <div>
+                            <div class="file-icon">📁</div>
+                            <div class="file-text">Dosya seçmek için tıklayın veya sürükleyin</div>
+                            <div class="file-name" id="fileName"></div>
+                        </div>
+                    </div>
+                    <input type="file" id="audioFile" accept="audio/*">
+                </div>
+            </div>
+
+            <button class="btn btn-primary" id="submitBtn" onclick="startTranscription()">
+                <span id="btnText">🚀 Çeviriyi Başlat</span>
+                <div class="spinner" id="spinner" style="display: none;"></div>
+            </button>
+
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+
+        <div class="card result-card" id="resultCard">
+            <label>Transkripsiyon Sonucu</label>
+            <textarea class="result-textarea" id="resultText" readonly></textarea>
+            <button class="btn copy-btn" onclick="copyResult()">📋 Kopyala</button>
+        </div>
+
+        <footer class="footer">
+            <p>Powered by Faster-Whisper AI</p>
+        </footer>
+    </div>
+
+    <script type="module">
+        // ==================== CONFIGURATION ====================
+        // Replace with your Hugging Face Space URL
+        const HF_SPACE_URL = "Jedi09/turkce-ses-api";
+        // =======================================================
+
+        import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/+esm";
+
+        let client = null;
+
+        // Initialize client
+        async function initClient() {
+            try {
+                client = await Client.connect(HF_SPACE_URL);
+                console.log("✅ Connected to API");
+            } catch (error) {
+                console.error("❌ Failed to connect:", error);
+            }
+        }
+
+        // Initialize on load
+        initClient();
+
+        // File input handling
+        const fileInput = document.getElementById('audioFile');
+        const fileDisplay = document.getElementById('fileDisplay');
+        const fileName = document.getElementById('fileName');
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                fileName.textContent = file.name;
+                fileDisplay.classList.add('has-file');
+            } else {
+                fileName.textContent = '';
+                fileDisplay.classList.remove('has-file');
+            }
+        });
+
+        // Make startTranscription available globally
+        window.startTranscription = async function () {
+            const password = document.getElementById('password').value;
+            const audioFile = document.getElementById('audioFile').files[0];
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const spinner = document.getElementById('spinner');
+            const errorMessage = document.getElementById('errorMessage');
+            const resultCard = document.getElementById('resultCard');
+            const resultText = document.getElementById('resultText');
+
+            // Validation
+            if (!password) {
+                showError("Lütfen şifrenizi girin.");
+                return;
+            }
+
+            if (!audioFile) {
+                showError("Lütfen bir ses dosyası seçin.");
+                return;
+            }
+
+            // Check client connection
+            if (!client) {
+                showError("API bağlantısı kurulamadı. Sayfayı yenileyin.");
+                return;
+            }
+
+            // UI: Start loading
+            submitBtn.disabled = true;
+            btnText.textContent = "İşleniyor...";
+            spinner.style.display = "block";
+            errorMessage.classList.remove('visible');
+            resultCard.classList.remove('visible');
+
+            try {
+                // Call Gradio API
+                const result = await client.predict("/predict", {
+                    audio_path: audioFile,  // File object
+                    password: password
+                });
+
+                const text = result.data[0];
+
+                // Check for error in response
+                if (text.startsWith("❌")) {
+                    showError(text);
+                } else {
+                    // Success
+                    resultText.value = text;
+                    resultCard.classList.add('visible');
+                }
+
+            } catch (error) {
+                console.error("API Error:", error);
+                showError("Bağlantı hatası. Lütfen tekrar deneyin.");
+            } finally {
+                // UI: Reset loading
+                submitBtn.disabled = false;
+                btnText.textContent = "🚀 Çeviriyi Başlat";
+                spinner.style.display = "none";
+            }
+        };
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.classList.add('visible');
+        }
+
+        window.copyResult = function () {
+            const resultText = document.getElementById('resultText');
+            resultText.select();
+            document.execCommand('copy');
+
+            // Visual feedback
+            const copyBtn = event.target;
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = "✅ Kopyalandı!";
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+            }, 2000);
+        };
+    </script>
+</body>
+
+</html>
